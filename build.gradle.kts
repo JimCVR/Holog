@@ -36,3 +36,9 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+
+git init
+		git add *
+git commit -a -m 'Initial commit'
+git remote add origin https://github.com/JimCVR/Holog.git
