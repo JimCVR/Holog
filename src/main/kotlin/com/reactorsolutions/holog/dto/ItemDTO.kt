@@ -1,9 +1,8 @@
 package com.reactorsolutions.holog.dto
 
 data class ItemDTO(
-    var id: Long,
-    var name: String,
-    var description: String,
-    var author: String,
-) {
-}
+    val id: Long,
+    val name: String,
+    val description: String,
+    val author: String,
+)
