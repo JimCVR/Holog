@@ -71,9 +71,9 @@ paths:
     post:
       tags:
         - Categories
-      summary: Updates a category
+      summary: Creates a category
       description: ''
-      operationId: updateCategoryWithForm
+      operationId: insertCategory
       parameters:
         - name: user-id
           in: path
@@ -83,7 +83,7 @@ paths:
             type: integer
             format: int64
       requestBody:
-        description: Update an existent category
+        description: Creates a category
         content:
           application/json:
             schema:
@@ -218,7 +218,7 @@ paths:
             format: int64
       responses:
         '400':
-          description: Invalid category value
+          description: Invalid id category value
             
   /user/{user-id}/items:
     get:
@@ -255,7 +255,7 @@ paths:
     post:
       tags:
         - Items
-      summary: Updates an item
+      summary: Creates an item
       description: ''
       operationId: updateItemWithForm
       parameters:
@@ -267,7 +267,7 @@ paths:
             type: integer
             format: int64
       requestBody:
-        description: Update an existent category
+        description: Creates an item
         content:
           application/json:
             schema:
