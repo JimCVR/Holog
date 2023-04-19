@@ -5,7 +5,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.0"
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
-	//kotlin("plugin.jpa") version "1.7.22"
+	kotlin("plugin.jpa") version "1.7.22"
 }
 
 group = "com.reactorsolutions"
@@ -17,14 +17,17 @@ repositories {
 }
 
 dependencies {
+	// https://mvnrepository.com/artifact/junit/junit
+	testImplementation("junit:junit:4.13.1")
 	//implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
-	//implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	//implementation ("org.hibernate.validator:hibernate-validator:8.0.0.Final")
+	implementation("mysql:mysql-connector-java:8.0.32")
+	implementation ("org.hibernate.validator:hibernate-validator:8.0.0.Final")
 
 }
 
