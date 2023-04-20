@@ -19,6 +19,12 @@ class CategoriesController {
     @Autowired
     lateinit var mapper: Mapper<CategoryDTO, Category>
 
+    constructor(categoryServiceAPI: CategoriesServiceAPI, mapper: Mapper<CategoryDTO, Category>) {
+        this.categoryServiceAPI = categoryServiceAPI
+        this.mapper = mapper
+    }
+
+
     @GetMapping("/{userId}/categories")
     fun getCategories(@PathVariable userId: Long): ResponseEntity<MutableList<CategoryDTO>> {
         val categories = categoryServiceAPI.getAllCategories()
@@ -40,8 +46,10 @@ class CategoriesController {
     @PostMapping("/{userId}/categories")
     fun insertCategory(@PathVariable userId: Long, @RequestBody categoryDTO: CategoryDTO): ResponseEntity<Any> {
         val category = mapper.toEntity(categoryDTO)
-        categoryServiceAPI.createCategory(category)
-        return ResponseEntity("Category created", HttpStatus.OK)
+        return if (categoryServiceAPI.createCategory(category)!= null)
+            ResponseEntity("Category created", HttpStatus.OK)
+        else
+            ResponseEntity("Category not created", HttpStatus.BAD_REQUEST)
     }
 
     @PutMapping("/{userId}/categories/{id}")
@@ -51,8 +59,10 @@ class CategoriesController {
         @RequestBody categoryDTO: CategoryDTO
     ): ResponseEntity<Any> {
         val category = mapper.toEntity(categoryDTO)
-        categoryServiceAPI.updateCategory(category)
-        return ResponseEntity("Category updated", HttpStatus.OK)
+        return if (categoryServiceAPI.updateCategory(category))
+            ResponseEntity("Category updated", HttpStatus.OK)
+        else
+            ResponseEntity("Category id not found",HttpStatus.NOT_MODIFIED)
     }
 
     @DeleteMapping("/{userId}/categories/{id}")

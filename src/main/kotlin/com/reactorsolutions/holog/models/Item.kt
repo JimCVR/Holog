@@ -18,4 +18,7 @@ data class Item(
 
     @Column(name = "author")
     var author: String?,
+
+    @ManyToMany(mappedBy = "items")
+    var categories: MutableSet<Category>? = null
 )

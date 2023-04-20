@@ -17,9 +17,9 @@ repositories {
 }
 
 dependencies {
-	// https://mvnrepository.com/artifact/junit/junit
-	testImplementation("junit:junit:4.13.1")
 	//implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
+	testImplementation("junit:junit:4.13.1")
+	testImplementation ("io.mockk:mockk:1.9.3")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")

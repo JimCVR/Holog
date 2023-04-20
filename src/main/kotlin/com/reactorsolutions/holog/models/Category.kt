@@ -16,4 +16,12 @@ data class Category(
     @Column(name = "iconId")
     var iconId: Int?,
 
+    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "category_item",
+        joinColumns = [JoinColumn(name = "category_id")],
+        inverseJoinColumns = [JoinColumn(name = "item_id")]
+    )
+    var items: MutableSet<Item>?=null,
+
     )

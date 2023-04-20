@@ -25,16 +25,18 @@ class CategoriesServiceImpl : CategoriesServiceAPI {
 
     }
 
-    override fun createCategory(category: Category) {
-        categoriesRepository.save(category)
+    override fun createCategory(category: Category): Category {
+        return categoriesRepository.save(category)
     }
 
-    override fun updateCategory(categoryUpdated: Category) {
+    override fun updateCategory(categoryUpdated: Category): Boolean {
         val category: Category? = categoriesRepository.findById(categoryUpdated.id).orElse(null)
-        if (category != null)
+        if (category != null) {
             categoriesRepository.save(categoryUpdated)
-        else
+            return true
+        } else {
             throw CategoryNotFoundException("Category Not Found")
+        }
     }
 
     override fun deleteCategory(id: Long): Category {
