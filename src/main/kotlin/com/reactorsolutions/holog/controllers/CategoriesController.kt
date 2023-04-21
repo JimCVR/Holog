@@ -20,7 +20,6 @@ class CategoriesController {
         this.mapper = mapper
     }
 
-
     @GetMapping("/{userId}/categories")
     fun getCategories(@PathVariable userId: Long): ResponseEntity<List<CategoryDTO>> {
         val categories = categoryServiceAPI.getAllCategories()

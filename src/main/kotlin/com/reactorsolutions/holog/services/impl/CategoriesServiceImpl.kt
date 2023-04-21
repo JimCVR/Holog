@@ -19,12 +19,7 @@ class CategoriesServiceImpl : CategoriesServiceAPI {
     }
 
     override fun getCategoryById(id: Long): Category {
-        val category: Category? = categoriesRepository.findById(id).orElse(null)
-        if (category != null)
-            return category
-        else
-            throw CategoryNotFoundException("Category not found")
-
+        return categoriesRepository.findById(id).orElseThrow { CategoryNotFoundException("Category not found") }
     }
 
     override fun createCategory(category: Category): Category {
@@ -32,21 +27,16 @@ class CategoriesServiceImpl : CategoriesServiceAPI {
     }
 
     override fun updateCategory(categoryUpdated: Category): Boolean {
-        val category = categoriesRepository.findById(categoryUpdated.id).orElseThrow { CategoryNotFoundException("Category not found") }
-        if (category != null) {
-            categoriesRepository.save(categoryUpdated)
-            return true
-        } else {
-            throw CategoryNotFoundException("Category Not Found")
-        }
+        val category = categoriesRepository.findById(categoryUpdated.id)
+            .orElseThrow { CategoryNotFoundException("Category not found") }
+        categoriesRepository.save(categoryUpdated)
+        return true
     }
 
     override fun deleteCategory(id: Long): Category {
-        val category: Category? = categoriesRepository.findById(id).orElse(null)
-        if (category != null) {
-            categoriesRepository.deleteById(id)
-            return category
-        } else
-            throw CategoryNotFoundException("Category Not Found")
+        val category: Category =
+            categoriesRepository.findById(id).orElseThrow { CategoryNotFoundException("Category not found") }
+        categoriesRepository.deleteById(id)
+        return category
     }
 }
