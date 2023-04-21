@@ -6,9 +6,11 @@ import com.reactorsolutions.holog.repositories.CategoriesRepository
 import com.reactorsolutions.holog.services.api.CategoriesServiceAPI
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.function.Supplier
 
 @Service
 class CategoriesServiceImpl : CategoriesServiceAPI {
+
     @Autowired
     lateinit var categoriesRepository: CategoriesRepository
 
@@ -30,7 +32,7 @@ class CategoriesServiceImpl : CategoriesServiceAPI {
     }
 
     override fun updateCategory(categoryUpdated: Category): Boolean {
-        val category: Category? = categoriesRepository.findById(categoryUpdated.id).orElse(null)
+        val category = categoriesRepository.findById(categoryUpdated.id).orElseThrow { CategoryNotFoundException("Category not found") }
         if (category != null) {
             categoriesRepository.save(categoryUpdated)
             return true

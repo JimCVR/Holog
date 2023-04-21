@@ -4,7 +4,6 @@ import com.reactorsolutions.holog.dto.CategoryDTO
 import com.reactorsolutions.holog.models.Category
 import com.reactorsolutions.holog.services.api.CategoriesServiceAPI
 import com.reactorsolutions.holog.utils.mapper.Mapper
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -13,11 +12,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/user")
 class CategoriesController {
 
-    @Autowired
-    lateinit var categoryServiceAPI: CategoriesServiceAPI
-
-    @Autowired
-    lateinit var mapper: Mapper<CategoryDTO, Category>
+    var categoryServiceAPI: CategoriesServiceAPI
+    var mapper: Mapper<CategoryDTO, Category>
 
     constructor(categoryServiceAPI: CategoriesServiceAPI, mapper: Mapper<CategoryDTO, Category>) {
         this.categoryServiceAPI = categoryServiceAPI
@@ -26,12 +22,10 @@ class CategoriesController {
 
 
     @GetMapping("/{userId}/categories")
-    fun getCategories(@PathVariable userId: Long): ResponseEntity<MutableList<CategoryDTO>> {
+    fun getCategories(@PathVariable userId: Long): ResponseEntity<List<CategoryDTO>> {
         val categories = categoryServiceAPI.getAllCategories()
-        var categoriesDTO: MutableList<CategoryDTO> = mutableListOf()
-        categories.forEach {
-            val categoryDTO = mapper.fromEntity(it)
-            categoriesDTO.add(categoryDTO)
+        val categoriesDTO = categories.map {
+            mapper.fromEntity(it)
         }
         return ResponseEntity(categoriesDTO, HttpStatus.OK)
     }
@@ -45,9 +39,11 @@ class CategoriesController {
 
     @PostMapping("/{userId}/categories")
     fun insertCategory(@PathVariable userId: Long, @RequestBody categoryDTO: CategoryDTO): ResponseEntity<Any> {
+        if (categoryDTO.name.isBlank())
+            return ResponseEntity("Category not created", HttpStatus.PRECONDITION_FAILED)
         val category = mapper.toEntity(categoryDTO)
         return if (categoryServiceAPI.createCategory(category)!= null)
-            ResponseEntity("Category created", HttpStatus.OK)
+            ResponseEntity(category, HttpStatus.OK)
         else
             ResponseEntity("Category not created", HttpStatus.BAD_REQUEST)
     }
@@ -58,9 +54,11 @@ class CategoriesController {
         @PathVariable id: Long,
         @RequestBody categoryDTO: CategoryDTO
     ): ResponseEntity<Any> {
+        if (categoryDTO.name.isBlank())
+            return ResponseEntity("Category not modified", HttpStatus.PRECONDITION_FAILED)
         val category = mapper.toEntity(categoryDTO)
         return if (categoryServiceAPI.updateCategory(category))
-            ResponseEntity("Category updated", HttpStatus.OK)
+            ResponseEntity(category, HttpStatus.OK)
         else
             ResponseEntity("Category id not found",HttpStatus.NOT_MODIFIED)
     }

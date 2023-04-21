@@ -11,7 +11,7 @@ data class Category(
     var id: Long,
 
     @Column(name = "name")
-    var name: String?,
+    var name: String,
 
     @Column(name = "iconId")
     var iconId: Int?,
