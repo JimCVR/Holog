@@ -1,8 +1,7 @@
 package com.reactorsolutions.holog.dto
 
-data class ItemDTO(
+data class ResponseCategoryDTO(
     val id: Long,
     val name: String,
-    val description: String?,
-    val author: String?,
+    val iconId: Int?=null
 )
