@@ -1,7 +1,6 @@
 package com.reactorsolutions.holog.dto
 
-data class CategoryDTO(
-    val id: Long,
+data class RequestCategoryDTO(
     val name: String,
-    val iconId: Int?
+    val iconId: Int?=null
 )

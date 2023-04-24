@@ -5,16 +5,12 @@ import jakarta.persistence.*
 @Entity
 @Table(name = "category")
 data class Category(
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long,
 
     @Column(name = "name")
     var name: String,
 
     @Column(name = "iconId")
-    var iconId: Int?,
+    var iconId: Int?=null,
 
     @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinTable(
@@ -23,5 +19,10 @@ data class Category(
         inverseJoinColumns = [JoinColumn(name = "item_id")]
     )
     var items: MutableSet<Item>?=null,
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long ?= null,
 
     )
