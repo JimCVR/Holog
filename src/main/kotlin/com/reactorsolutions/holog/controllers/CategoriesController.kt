@@ -19,6 +19,7 @@ class CategoriesController(
     var toCategory: Mapper<RequestCategoryDTO, Category>,
     var toResponse: Mapper<Category, ResponseCategoryDTO>
 ) {
+
     @GetMapping("/{userId}/categories")
     fun getCategories(@PathVariable userId: Long): ResponseEntity<List<ResponseCategoryDTO>> {
         val categories = categoryServiceAPI.getAllCategories()
@@ -42,6 +43,7 @@ class CategoriesController(
     ): ResponseEntity<String> {
         if (requestCategoryDTO.name.isBlank())
             return ResponseEntity("Category not created", HttpStatus.PRECONDITION_FAILED)
+
         val category = toCategory.transform(requestCategoryDTO)
         val categoryCreated = categoryServiceAPI.createCategory(category)
         val location = ServletUriComponentsBuilder
@@ -50,7 +52,6 @@ class CategoriesController(
             .buildAndExpand(categoryCreated.id)
             .toUri()
         return ResponseEntity.created(location).body("Category created")
-        //return ResponseEntity("Category created",HttpStatus.OK)
     }
 
     @PutMapping("/{userId}/categories/{id}")
@@ -61,9 +62,9 @@ class CategoriesController(
     ): ResponseEntity<String> {
         if (requestCategoryDTO.name.isBlank())
             return ResponseEntity("Category not modified", HttpStatus.PRECONDITION_FAILED)
-        var category = toCategory.transform(requestCategoryDTO)
-        category.id = id
-        return if (categoryServiceAPI.updateCategory(category))
+
+        val category = toCategory.transform(requestCategoryDTO)
+        return if (categoryServiceAPI.updateCategory(id,category))
             ResponseEntity("Category updated", HttpStatus.OK)
         else
             ResponseEntity("Category id not found", HttpStatus.NOT_MODIFIED)
