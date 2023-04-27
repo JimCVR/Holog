@@ -7,18 +7,12 @@ import com.reactorsolutions.holog.models.Item
 import com.reactorsolutions.holog.repositories.CategoriesRepository
 import com.reactorsolutions.holog.repositories.ItemsRepository
 import com.reactorsolutions.holog.services.api.ItemsServiceAPI
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
-class ItemsServiceImpl : ItemsServiceAPI {
+class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepository: CategoriesRepository) :
+    ItemsServiceAPI {
 
-    @Autowired
-    lateinit var itemsRepository: ItemsRepository
-
-    @Autowired
-    lateinit var categoriesRepository: CategoriesRepository
     override fun getAllItems(): MutableList<Item> {
         return itemsRepository.findAll() as MutableList<Item>
     }
@@ -32,44 +26,55 @@ class ItemsServiceImpl : ItemsServiceAPI {
 
     }
 
-    override fun getItemByCategory(id: Long): Category {
-        val items = itemsRepository.findAll()
-        var category: Category?
-        items.forEach { it ->
-            if (it.categories != null) {
-                category = it.categories!!.first { it2 ->
-                    it2.id == id
-                }
+    override fun getItemByCategory(categoryId: Long): MutableSet<Item> {
+        val category = categoriesRepository.findById(categoryId).orElseThrow{CategoryNotFoundException("")}
+
+        if (category != null) {
+            val items = category.items
+            if (items != null) {
+                return items
             }
         }
-        return Category(" ", 1)
+        return mutableSetOf()
+
+        //esto itera sobre los items y sobre las categorias de items, comparando id
+        // y añadiendolo a la lista de items que devolvemos
+        /* val item = itemsRepository.findAll()
+            val itemsByCategory: MutableSet<Item> = mutableSetOf()
+
+            item.forEach {
+                it.categories.forEach { it2 ->
+                    if (it2.id == categoryId)
+                        itemsByCategory.add(it)
+                }
+            }
+            return itemsByCategory*/
     }
 
     override fun createItem(categoriesId: MutableList<Long>, item: Item): Item {
         val itemCreated = itemsRepository.save(item)
         var exceptions = mutableSetOf<Long>()
-        var category :Category? = null
-        //por cada category id voy a buscar si esta,
+        var category: Category? = null
         categoriesId.forEach {
-             category = categoriesRepository.findById(it).orElse(null)
+            category = categoriesRepository.findById(it).orElse(null)
             if (category == null) {
                 exceptions.add(it)
             } else {
                 category!!.items!!.add(itemCreated)
             }
-
         }
-        if (exceptions.isNotEmpty()){
+
+        if (exceptions.isNotEmpty()) {
             itemsRepository.delete(itemCreated)
             throw CategoryNotFoundException("Category not found for id: $exceptions")
-        }
-        else  categoriesRepository.save(category!!)
+        } else categoriesRepository.save(category!!)
 
-        return item
+        return itemCreated
     }
 
     override fun updateItem(id: Long, itemUpdated: Item): Boolean {
         val item = itemsRepository.findById(id).orElseThrow { ItemNotFoundException("Item not found") }
+        itemUpdated.id = id
         itemsRepository.save(itemUpdated)
         return true
     }

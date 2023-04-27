@@ -23,6 +23,5 @@ data class Category(
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long ?= null,
-
-    )
+    var id: Long ?= null
+)

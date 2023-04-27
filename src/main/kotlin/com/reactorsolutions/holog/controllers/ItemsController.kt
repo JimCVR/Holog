@@ -39,11 +39,11 @@ class ItemsController(
     fun getItemByCategory(
         @PathVariable userId: Long,
         @PathVariable categoryId: Long
-    ): ResponseEntity<ResponseCategoryDTO> {
+    ): ResponseEntity<MutableSet<ResponseItemDTO>> {
         val categoryToResponse = CategoryToResponse()
-        val category = itemsServiceAPI.getItemByCategory(categoryId)
-        val categoryDTO = categoryToResponse.transform(category)
-        return ResponseEntity(categoryDTO, HttpStatus.OK)
+        val items = itemsServiceAPI.getItemByCategory(categoryId)
+        val responseItemDTO = items.map {  toResponse.transform(it)}.toMutableSet()
+        return ResponseEntity(responseItemDTO, HttpStatus.OK)
     }
 
 

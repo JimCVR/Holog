@@ -7,7 +7,7 @@ import com.reactorsolutions.holog.models.Item
 interface ItemsServiceAPI {
     fun getAllItems():MutableList<Item>
     fun getItemById(id:Long): Item
-    fun getItemByCategory(id:Long): Category
+    fun getItemByCategory(id:Long): MutableSet<Item>
     fun createItem(categoriesId:MutableList<Long>,item: Item): Item
     fun updateItem(id: Long, item: Item):Boolean
     fun deleteItem(id:Long): Item
