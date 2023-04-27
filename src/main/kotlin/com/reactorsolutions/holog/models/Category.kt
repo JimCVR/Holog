@@ -12,7 +12,7 @@ data class Category(
     @Column(name = "iconId")
     var iconId: Int?=null,
 
-    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @ManyToMany(cascade = [CascadeType.PERSIST,CascadeType.MERGE], fetch = FetchType.LAZY)
     @JoinTable(
         name = "category_item",
         joinColumns = [JoinColumn(name = "category_id")],

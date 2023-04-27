@@ -5,20 +5,23 @@ import jakarta.persistence.*
 @Entity
 @Table(name = "item")
 data class Item(
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long,
 
     @Column(name = "name")
     var name: String,
 
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
+    var categories: MutableSet<Category>,
+
     @Column(name = "description")
-    var description: String?,
+    var description: String? = null,
 
     @Column(name = "author")
-    var author: String?,
+    var author: String? = null,
 
-    @ManyToMany(mappedBy = "items")
-    var categories: MutableSet<Category>? = null
+
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null,
 )

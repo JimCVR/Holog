@@ -3,8 +3,12 @@ package com.reactorsolutions.holog.controllers
 import com.reactorsolutions.holog.dto.RequestCategoryDTO
 import com.reactorsolutions.holog.dto.ResponseCategoryDTO
 import com.reactorsolutions.holog.models.Category
+import com.reactorsolutions.holog.models.Item
+import com.reactorsolutions.holog.repositories.ItemsRepository
 import com.reactorsolutions.holog.services.api.CategoriesServiceAPI
+import com.reactorsolutions.holog.services.impl.ItemsServiceImpl
 import com.reactorsolutions.holog.utils.mapper.Mapper
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -54,6 +58,27 @@ class CategoriesController(
         return ResponseEntity.created(location).body("Category created")
     }
 
+    @PostMapping("/{userId}/categories/prueba")
+    fun insertCategoryPrueba(
+        @PathVariable userId: Long
+    ): ResponseEntity<String> {
+        var items = mutableSetOf<Item>(Item("origen", mutableSetOf(),"ola k ase","don nolan"))
+        val categoryCreated = Category(
+            "Pelis de NOLAN",
+            3,
+            items
+            )
+
+        //items.forEach { it.categories.add(categoryCreated)}
+        categoryServiceAPI.createCategory(categoryCreated)
+        /*val location = ServletUriComponentsBuilder
+            .fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(categoryCreated.id)
+            .toUri()*/
+        return ResponseEntity("Category created",HttpStatus.CREATED)
+    }
+
     @PutMapping("/{userId}/categories/{id}")
     fun updateCategory(
         @PathVariable userId: Long,
@@ -64,7 +89,7 @@ class CategoriesController(
             return ResponseEntity("Category not modified", HttpStatus.PRECONDITION_FAILED)
 
         val category = toCategory.transform(requestCategoryDTO)
-        return if (categoryServiceAPI.updateCategory(id,category))
+        return if (categoryServiceAPI.updateCategory(id, category))
             ResponseEntity("Category updated", HttpStatus.OK)
         else
             ResponseEntity("Category id not found", HttpStatus.NOT_MODIFIED)

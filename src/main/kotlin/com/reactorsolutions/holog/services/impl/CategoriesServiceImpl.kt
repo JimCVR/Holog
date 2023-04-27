@@ -24,6 +24,7 @@ class CategoriesServiceImpl(var categoriesRepository: CategoriesRepository) : Ca
     override fun updateCategory(id: Long,categoryUpdated: Category): Boolean {
         val category = categoriesRepository.findById(id)
             .orElseThrow { CategoryNotFoundException("Category not found") }
+        categoryUpdated.id = id
         categoriesRepository.save(categoryUpdated)
         return true
     }
