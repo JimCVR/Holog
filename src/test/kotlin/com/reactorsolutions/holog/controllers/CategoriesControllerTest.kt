@@ -28,7 +28,7 @@ class CategoriesControllerTest {
     fun getAllCategoriesReturn200WhenThereAreTwoElements() {
 
         val serviceMock = mockk<CategoriesServiceAPI>()
-        every { serviceMock.getAllCategories() } returns mutableListOf(
+        every { serviceMock.getAllCategories() } returns mutableSetOf(
             Category("peliculas", 0, mutableSetOf(), 1),
             Category("videojuegos", 1, mutableSetOf(), 2)
         )
@@ -50,7 +50,7 @@ class CategoriesControllerTest {
     @Test
     fun getAllCategoriesReturn200WhenThereIsOneElements() {
         val serviceMock = mockk<CategoriesServiceAPI>()
-        every { serviceMock.getAllCategories() } returns mutableListOf(Category("peliculas", 0, mutableSetOf(), 1))
+        every { serviceMock.getAllCategories() } returns mutableSetOf(Category("peliculas", 0, mutableSetOf(), 1))
         val categoriesController = CategoriesController(
             serviceMock,
             this.fromRequestToCategory, this.fromCategoryToResponse
@@ -63,7 +63,7 @@ class CategoriesControllerTest {
     @Test
     fun getAllCategoriesReturn200WhenThereAreNoElements() {
         val serviceMock = mockk<CategoriesServiceAPI>()
-        every { serviceMock.getAllCategories() } returns mutableListOf()
+        every { serviceMock.getAllCategories() } returns mutableSetOf()
         val categoriesController = CategoriesController(
             serviceMock,
             this.fromRequestToCategory, this.fromCategoryToResponse

@@ -1,29 +1,39 @@
 package com.reactorsolutions.holog.models
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 
 @Entity
 @Table(name = "item")
-data class Item(
+open class Item(
 
-    @Column(name = "name")
-    var name: String,
-    //Esta etiqueta era para evitar el stack overflow con el manytomany
-    /*@JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "items")
-    var categories: MutableSet<Category>,*/
+    @get:Column(name = "name")
+    open var name: String,
 
-    @Column(name = "description")
-    var description: String? = null,
+    @get:Column(name = "description")
+    open var description: String? = null,
 
-    @Column(name = "author")
-    var author: String? = null,
+    @get:Column(name = "author")
+    open var author: String? = null,
 
+    @get:ManyToMany(mappedBy = "items")
+    open var categories: MutableSet<Category> = HashSet(),
 
+    @get:Id
+    @get:GeneratedValue
+    @get:Column(name = "id")
+    open var id: Long? = null,
+){
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as Item
+        if (id != that.id) return false
+        return true
+    }
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
-)
+    override fun hashCode(): Int {
+        return if (id != null)
+            id.hashCode()
+        else 0
+    }
+}

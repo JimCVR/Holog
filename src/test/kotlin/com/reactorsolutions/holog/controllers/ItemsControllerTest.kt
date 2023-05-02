@@ -28,7 +28,7 @@ class ItemsControllerTest {
     fun getAllItemsReturn200WhenThereAreTwoElements() {
 
         val serviceMock = mockk<ItemsServiceAPI>()
-        every { serviceMock.getAllItems() } returns mutableListOf(
+        every { serviceMock.getAllItems() } returns mutableSetOf<Item>(
             Item(
                 "Interestellar", "lorem ipsum", "Christopher Nolan",
                 mutableSetOf(), 1
@@ -53,7 +53,7 @@ class ItemsControllerTest {
     @Test
     fun getAllItemsReturn200WhenThereIsOneElements() {
         val serviceMock = mockk<ItemsServiceAPI>()
-        every { serviceMock.getAllItems() } returns mutableListOf(
+        every { serviceMock.getAllItems() } returns mutableSetOf(
             Item(
                 "Interestellar", "lorem ipsum", "Christopher Nolan",
                 mutableSetOf(), 1
@@ -76,7 +76,7 @@ class ItemsControllerTest {
     @Test
     fun getAllItemsReturn200WhenThereAreNoElements() {
         val serviceMock = mockk<ItemsServiceAPI>()
-        every { serviceMock.getAllItems() } returns mutableListOf()
+        every { serviceMock.getAllItems() } returns mutableSetOf()
 
         val itemsController = ItemsController(
             serviceMock,
@@ -118,12 +118,14 @@ class ItemsControllerTest {
 
     //CREATE ITEM
     @Test
-    fun createItemByIdReturn201WhenElementCreated() {
+    fun createItemReturn201WhenElementCreated() {
 
         val serviceMock = mockk<ItemsServiceAPI>()
         every {
             serviceMock.createItem(
+                mutableListOf(),
                 Item(
+
                     "Interestellar",
                     "lorem ipsum",
                     "Christopher Nolan"
@@ -146,7 +148,8 @@ class ItemsControllerTest {
             1, RequestItemDTO(
                 "Interestellar",
                 "lorem ipsum",
-                "Christopher Nolan"
+                "Christopher Nolan",
+                mutableListOf()
             )
         )
         assertEquals(HttpStatus.CREATED, items.statusCode)
@@ -159,6 +162,7 @@ class ItemsControllerTest {
         val serviceMock = mockk<ItemsServiceAPI>()
         every {
             serviceMock.createItem(
+                mutableListOf(),
                 Item(
                     "Interestellar",
                     "lorem ipsum",
@@ -176,7 +180,8 @@ class ItemsControllerTest {
                 RequestItemDTO(
                     "Interestellar",
                     "lorem ipsum",
-                    "Christopher Nolan"
+                    "Christopher Nolan",
+                    mutableListOf()
                 )
             )
         }
@@ -187,6 +192,7 @@ class ItemsControllerTest {
         val serviceMock = mockk<ItemsServiceAPI>()
         every {
             serviceMock.createItem(
+                mutableListOf(),
                 Item(
                     "",
                     "lorem ipsum",
@@ -206,7 +212,8 @@ class ItemsControllerTest {
             1, RequestItemDTO(
                 "",
                 "lorem ipsum",
-                "Christopher Nolan"
+                "Christopher Nolan",
+                mutableListOf()
             )
         )
         assertEquals(HttpStatus.PRECONDITION_FAILED, item.statusCode)
@@ -225,7 +232,7 @@ class ItemsControllerTest {
                     "Interestellar",
                     "lorem ipsum",
                     "Christopher Nolan",
-                    null
+                    hashSetOf()
                 )
             )
         } returns true
@@ -237,7 +244,8 @@ class ItemsControllerTest {
             1, 1, RequestItemDTO(
                 "Interestellar",
                 "lorem ipsum",
-                "Christopher Nolan"
+                "Christopher Nolan",
+                mutableListOf()
             )
         )
         assertEquals(HttpStatus.OK, item.statusCode)
@@ -265,7 +273,8 @@ class ItemsControllerTest {
             1, 1, RequestItemDTO(
                 "",
                 "lorem ipsum",
-                "Christopher Nolan"
+                "Christopher Nolan",
+                mutableListOf()
             )
         )
         assertEquals(HttpStatus.PRECONDITION_FAILED, item.statusCode)
@@ -296,7 +305,8 @@ class ItemsControllerTest {
                 RequestItemDTO(
                     "Interestellar",
                     "lorem ipsum",
-                    "Christopher Nolan"
+                    "Christopher Nolan",
+                    mutableListOf()
                 )
             )
         }

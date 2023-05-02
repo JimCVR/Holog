@@ -4,24 +4,37 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "category")
-data class Category(
+open class Category (
 
-    @Column(name = "name")
-    var name: String,
+    @get:Column(name = "name")
+    open var name: String,
 
-    @Column(name = "iconId")
-    var iconId: Int?=null,
+    @get:Column(name = "icon_id")
+    open var iconId: Int? = null,
 
-    @ManyToMany(cascade = [CascadeType.PERSIST,CascadeType.MERGE], fetch = FetchType.LAZY)
-    @JoinTable(
+    @get:ManyToMany
+    @get:JoinTable(
         name = "category_item",
         joinColumns = [JoinColumn(name = "category_id")],
         inverseJoinColumns = [JoinColumn(name = "item_id")]
     )
-    var items: MutableSet<Item>?=null,
+    open var items: MutableSet<Item> = HashSet(),
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long ?= null
-)
+    @get:Id
+    @get:GeneratedValue
+    @get:Column(name = "id")
+    open var id: Long? = null,
+){
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Category) return false
+
+        if (id != other.id) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: 0
+    }
+}

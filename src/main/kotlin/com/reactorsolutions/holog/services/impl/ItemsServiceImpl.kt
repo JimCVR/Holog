@@ -13,20 +13,20 @@ import org.springframework.stereotype.Service
 class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepository: CategoriesRepository) :
     ItemsServiceAPI {
 
-    override fun getAllItems(): MutableList<Item> {
-        return itemsRepository.findAll() as MutableList<Item>
+    override fun getAllItems(): Set<Item> {
+        return itemsRepository.findAll().toSet()
     }
 
     override fun getItemById(id: Long): Item {
         val item: Item? = itemsRepository.findById(id).orElse(null)
+
         if (item != null)
             return item
         else
             throw ItemNotFoundException("Item no found")
-
     }
 
-    override fun getItemByCategory(categoryId: Long): MutableSet<Item> {
+    override fun getItemByCategory(categoryId: Long): Set<Item> {
         val category = categoriesRepository.findById(categoryId).orElseThrow{CategoryNotFoundException("")}
 
         if (category != null) {
@@ -36,23 +36,9 @@ class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepos
             }
         }
         return mutableSetOf()
-
-        //esto itera sobre los items y sobre las categorias de items, comparando id
-        // y añadiendolo a la lista de items que devolvemos
-        /* val item = itemsRepository.findAll()
-            val itemsByCategory: MutableSet<Item> = mutableSetOf()
-
-            item.forEach {
-                it.categories.forEach { it2 ->
-                    if (it2.id == categoryId)
-                        itemsByCategory.add(it)
-                }
-            }
-            return itemsByCategory*/
     }
 
-    override fun createItem(categoriesId: MutableList<Long>, item: Item): Item {
-        val itemCreated = itemsRepository.save(item)
+    override fun createItem(categoriesId: List<Long>, item: Item): Item {
         var exceptions = mutableSetOf<Long>()
         var category: Category? = null
         categoriesId.forEach {
@@ -60,16 +46,15 @@ class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepos
             if (category == null) {
                 exceptions.add(it)
             } else {
-                category!!.items!!.add(itemCreated)
+                category!!.items.add(itemsRepository.save(item))
             }
         }
 
         if (exceptions.isNotEmpty()) {
-            itemsRepository.delete(itemCreated)
             throw CategoryNotFoundException("Category not found for id: $exceptions")
         } else categoriesRepository.save(category!!)
 
-        return itemCreated
+        return item
     }
 
     override fun updateItem(id: Long, itemUpdated: Item): Boolean {
@@ -81,6 +66,7 @@ class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepos
 
     override fun deleteItem(id: Long): Item {
         val item: Item? = itemsRepository.findById(id).orElse(null)
+
         if (item != null) {
             itemsRepository.deleteById(id)
             return item

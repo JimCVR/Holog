@@ -3,14 +3,16 @@ package com.reactorsolutions.holog.services.impl
 import com.reactorsolutions.holog.exceptions.category.CategoryNotFoundException
 import com.reactorsolutions.holog.models.Category
 import com.reactorsolutions.holog.repositories.CategoriesRepository
+import com.reactorsolutions.holog.repositories.ItemsRepository
 import com.reactorsolutions.holog.services.api.CategoriesServiceAPI
 import org.springframework.stereotype.Service
 
 @Service
-class CategoriesServiceImpl(var categoriesRepository: CategoriesRepository) : CategoriesServiceAPI {
+class CategoriesServiceImpl(var categoriesRepository: CategoriesRepository, var itemsRepository: ItemsRepository) :
+    CategoriesServiceAPI {
 
-    override fun getAllCategories(): MutableList<Category> {
-        return categoriesRepository.findAll() as MutableList<Category>
+    override fun getAllCategories(): Set<Category> {
+        return categoriesRepository.findAll().toSet()
     }
 
     override fun getCategoryById(id: Long): Category {
@@ -33,8 +35,16 @@ class CategoriesServiceImpl(var categoriesRepository: CategoriesRepository) : Ca
         val category: Category =
             categoriesRepository.findById(id).orElseThrow { CategoryNotFoundException("Category not found") }
         categoriesRepository.deleteById(id)
+        deleteOrphanItem()
         return category
     }
 
-
+    fun deleteOrphanItem() {
+        val items = itemsRepository.findAll()
+        items.forEach {
+            if (it.categories.isEmpty()) {
+                itemsRepository.delete(it)
+            }
+        }
+    }
 }
