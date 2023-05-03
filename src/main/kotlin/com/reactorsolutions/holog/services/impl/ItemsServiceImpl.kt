@@ -27,7 +27,7 @@ class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepos
     }
 
     override fun getItemByCategory(categoryId: Long): Set<Item> {
-        val category = categoriesRepository.findById(categoryId).orElseThrow{CategoryNotFoundException("")}
+        val category = categoriesRepository.findById(categoryId).orElseThrow { CategoryNotFoundException("") }
 
         if (category != null) {
             val items = category.items
@@ -39,20 +39,22 @@ class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepos
     }
 
     override fun createItem(categoriesId: List<Long>, item: Item): Item {
-        var exceptions = mutableSetOf<Long>()
-        var category: Category? = null
+        val exceptions = mutableSetOf<Long>()
+        val categories = mutableListOf<Category>()
+
         categoriesId.forEach {
-            category = categoriesRepository.findById(it).orElse(null)
-            if (category == null) {
+            categoriesRepository.findById(it).ifPresentOrElse({ cat ->
+                cat.items.add(itemsRepository.save(item))
+                categories.add(cat)
+
+            }, {
                 exceptions.add(it)
-            } else {
-                category!!.items.add(itemsRepository.save(item))
-            }
+            })
         }
 
         if (exceptions.isNotEmpty()) {
             throw CategoryNotFoundException("Category not found for id: $exceptions")
-        } else categoriesRepository.save(category!!)
+        } else categories.forEach { categoriesRepository.save(it) }
 
         return item
     }
