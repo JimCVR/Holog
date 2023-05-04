@@ -18,24 +18,14 @@ class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepos
     }
 
     override fun getItemById(id: Long): Item {
-        val item: Item? = itemsRepository.findById(id).orElse(null)
-
-        if (item != null)
-            return item
-        else
-            throw ItemNotFoundException("Item no found")
+        val item: Item? = itemsRepository.findById(id).orElseThrow{ItemNotFoundException("Item Not found")}
+            return item!!
     }
 
     override fun getItemByCategory(categoryId: Long): Set<Item> {
-        val category = categoriesRepository.findById(categoryId).orElseThrow { CategoryNotFoundException("") }
-
-        if (category != null) {
-            val items = category.items
-            if (items != null) {
-                return items
-            }
-        }
-        return mutableSetOf()
+        val category =
+            categoriesRepository.findById(categoryId).orElseThrow { CategoryNotFoundException("Category not found") }
+        return category.items
     }
 
     override fun createItem(categoriesId: List<Long>, item: Item): Item {
@@ -44,9 +34,8 @@ class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepos
 
         categoriesId.forEach {
             categoriesRepository.findById(it).ifPresentOrElse({ cat ->
-                cat.items.add(itemsRepository.save(item))
+                cat.items.add(item)
                 categories.add(cat)
-
             }, {
                 exceptions.add(it)
             })
@@ -67,13 +56,8 @@ class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepos
     }
 
     override fun deleteItem(id: Long): Item {
-        val item: Item? = itemsRepository.findById(id).orElse(null)
-
-        if (item != null) {
-            itemsRepository.deleteById(id)
-            return item
-        } else
-            throw ItemNotFoundException("Item no found")
+        val item: Item? = itemsRepository.findById(id).orElseThrow{ ItemNotFoundException("Item not found")}
+            return item!!
     }
 
 }

@@ -35,16 +35,7 @@ class CategoriesServiceImpl(var categoriesRepository: CategoriesRepository, var 
         val category: Category =
             categoriesRepository.findById(id).orElseThrow { CategoryNotFoundException("Category not found") }
         categoriesRepository.deleteById(id)
-        deleteOrphanItem()
         return category
     }
 
-    fun deleteOrphanItem() {
-        val items = itemsRepository.findAll()
-        items.forEach {
-            if (it.categories.isEmpty()) {
-                itemsRepository.delete(it)
-            }
-        }
-    }
 }

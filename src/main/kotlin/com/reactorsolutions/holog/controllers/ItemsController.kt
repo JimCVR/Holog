@@ -1,7 +1,6 @@
 package com.reactorsolutions.holog.controllers
 
 import com.reactorsolutions.holog.dto.RequestItemDTO
-import com.reactorsolutions.holog.dto.ResponseCategoryDTO
 import com.reactorsolutions.holog.dto.ResponseItemDTO
 import com.reactorsolutions.holog.models.Item
 import com.reactorsolutions.holog.services.api.ItemsServiceAPI
@@ -18,31 +17,30 @@ class ItemsController(
 
     var itemsServiceAPI: ItemsServiceAPI,
     var toItem: Mapper<RequestItemDTO, Item>,
-    var toResponse: Mapper<Item, ResponseItemDTO>
+    var toResponseItem: Mapper<Item, ResponseItemDTO>
 ) {
 
     @GetMapping("/{userId}/items")
     fun getItems(@PathVariable userId: Long): ResponseEntity<List<ResponseItemDTO>> {
         val items = itemsServiceAPI.getAllItems()
-        val responseItemsDTO = items.map { toResponse.transform(it) }
+        val responseItemsDTO = items.map { toResponseItem.transform(it) }
         return ResponseEntity(responseItemsDTO, HttpStatus.OK)
     }
 
     @GetMapping("/{userId}/items/{id}")
     fun getItemById(@PathVariable userId: Long, @PathVariable id: Long): ResponseEntity<ResponseItemDTO> {
         val item = itemsServiceAPI.getItemById(id)
-        val itemDTO = toResponse.transform(item)
+        val itemDTO = toResponseItem.transform(item)
         return ResponseEntity(itemDTO, HttpStatus.OK)
     }
 
-    @GetMapping("/{userId}/items/categories/{categoryId}")
+    @GetMapping("/{userId}/categories/{categoryId}/items")
     fun getItemByCategory(
         @PathVariable userId: Long,
         @PathVariable categoryId: Long
-    ): ResponseEntity<MutableSet<ResponseItemDTO>> {
-        val categoryToResponse = CategoryToResponse()
+    ): ResponseEntity<Set<ResponseItemDTO>> {
         val items = itemsServiceAPI.getItemByCategory(categoryId)
-        val responseItemDTO = items.map {  toResponse.transform(it)}.toMutableSet()
+        val responseItemDTO = items.map {  toResponseItem.transform(it)}.toMutableSet()
         return ResponseEntity(responseItemDTO, HttpStatus.OK)
     }
 
@@ -81,7 +79,7 @@ class ItemsController(
     @DeleteMapping("/{userId}/items/{id}")
     fun deleteItem(@PathVariable userId: Long, id: Long): ResponseEntity<ResponseItemDTO> {
         val deletedItem = itemsServiceAPI.deleteItem(id)
-        val deletedItemDTO = toResponse.transform(deletedItem)
+        val deletedItemDTO = toResponseItem.transform(deletedItem)
         return ResponseEntity(deletedItemDTO, HttpStatus.OK)
     }
 }

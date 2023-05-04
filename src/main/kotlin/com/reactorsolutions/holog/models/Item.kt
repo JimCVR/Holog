@@ -15,7 +15,7 @@ open class Item(
     @get:Column(name = "author")
     open var author: String? = null,
 
-    @get:ManyToMany(mappedBy = "items")
+    @get:ManyToMany(cascade = [CascadeType.ALL],mappedBy = "items")
     open var categories: MutableSet<Category> = HashSet(),
 
     @get:Id

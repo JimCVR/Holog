@@ -12,7 +12,7 @@ open class Category (
     @get:Column(name = "icon_id")
     open var iconId: Int? = null,
 
-    @get:ManyToMany
+    @get:ManyToMany(cascade = [CascadeType.ALL])
     @get:JoinTable(
         name = "category_item",
         joinColumns = [JoinColumn(name = "category_id")],
@@ -25,6 +25,12 @@ open class Category (
     @get:Column(name = "id")
     open var id: Long? = null,
 ){
+
+    fun addItem(item:Item){
+        items.add(item)
+        item.categories.add(this)
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Category) return false
