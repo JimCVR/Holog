@@ -34,7 +34,7 @@ class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepos
 
         categoriesId.forEach {
             categoriesRepository.findById(it).ifPresentOrElse({ cat ->
-                cat.items.add(item)
+                cat.items.add(itemsRepository.save(item))
                 categories.add(cat)
             }, {
                 exceptions.add(it)
