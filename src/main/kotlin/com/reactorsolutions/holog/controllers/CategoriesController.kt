@@ -17,14 +17,14 @@ class CategoriesController(
 
     var categoryServiceAPI: CategoriesServiceAPI,
     var toCategory: Mapper<RequestCategoryDTO, Category>,
-    var toResponse: Mapper<Category, ResponseCategoryDTO>
+    var toResponseCategory: Mapper<Category, ResponseCategoryDTO>
 ) {
 
     @GetMapping("/{userId}/categories")
     fun getCategories(@PathVariable userId: Long): ResponseEntity<List<ResponseCategoryDTO>> {
         val categories = categoryServiceAPI.getAllCategories()
         val categoriesDTO = categories.map {
-            toResponse.transform(it)
+            toResponseCategory.transform(it)
         }
         return ResponseEntity(categoriesDTO, HttpStatus.OK)
     }
@@ -32,7 +32,7 @@ class CategoriesController(
     @GetMapping("/{userId}/categories/{id}")
     fun getCategoryById(@PathVariable userId: Long, @PathVariable id: Long): ResponseEntity<ResponseCategoryDTO> {
         val category = categoryServiceAPI.getCategoryById(id)
-        val categoryDTO = toResponse.transform(category)
+        val categoryDTO = toResponseCategory.transform(category)
         return ResponseEntity(categoryDTO, HttpStatus.OK)
     }
 
@@ -64,7 +64,7 @@ class CategoriesController(
             return ResponseEntity("Category not modified", HttpStatus.PRECONDITION_FAILED)
 
         val category = toCategory.transform(requestCategoryDTO)
-        return if (categoryServiceAPI.updateCategory(id,category))
+        return if (categoryServiceAPI.updateCategory(id, category))
             ResponseEntity("Category updated", HttpStatus.OK)
         else
             ResponseEntity("Category id not found", HttpStatus.NOT_MODIFIED)
@@ -73,7 +73,7 @@ class CategoriesController(
     @DeleteMapping("/{userId}/categories/{id}")
     fun deleteCategory(@PathVariable userId: Long, id: Long): ResponseEntity<ResponseCategoryDTO> {
         val deletedCategory = categoryServiceAPI.deleteCategory(id)
-        val deletedCategoryDTO = toResponse.transform(deletedCategory)
+        val deletedCategoryDTO = toResponseCategory.transform(deletedCategory)
         return ResponseEntity(deletedCategoryDTO, HttpStatus.OK)
     }
 }

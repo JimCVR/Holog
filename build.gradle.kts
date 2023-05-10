@@ -21,12 +21,12 @@ dependencies {
 	testImplementation("junit:junit:4.13.1")
 	testImplementation ("io.mockk:mockk:1.9.3")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
+	implementation("org.postgresql:postgresql:42.6.0")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	implementation("mysql:mysql-connector-java:8.0.32")
 	implementation ("org.hibernate.validator:hibernate-validator:8.0.0.Final")
 
 }

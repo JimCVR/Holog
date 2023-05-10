@@ -1,8 +1,8 @@
 package com.reactorsolutions.holog.dto
 
-data class ItemDTO(
-    val id: Long,
+data class RequestItemDTO(
     val name: String,
     val description: String?,
     val author: String?,
+    val categoriesId: MutableList<Long>
 )
