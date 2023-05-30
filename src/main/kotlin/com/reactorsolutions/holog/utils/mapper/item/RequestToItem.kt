@@ -11,6 +11,11 @@ class RequestToItem : Mapper<RequestItemDTO, Item> {
     override fun transform(domain: RequestItemDTO): Item = Item(
         domain.name,
         domain.description,
-        domain.author
+        domain.author,
+        domain.picture,
+        domain.score,
+        domain.date,
+        domain.status,
+        domain.custom,
     )
 }

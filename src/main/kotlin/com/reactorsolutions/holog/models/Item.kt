@@ -1,6 +1,7 @@
 package com.reactorsolutions.holog.models
 
 import jakarta.persistence.*
+import java.sql.Date
 
 @Entity
 @Table(name = "item")
@@ -9,14 +10,31 @@ open class Item(
     @get:Column(name = "name")
     open var name: String,
 
-    @get:Column(name = "description")
+    @get:Column(name = "description",length = 2000)
     open var description: String? = null,
 
     @get:Column(name = "author")
     open var author: String? = null,
 
-    @get:ManyToMany(cascade = [CascadeType.ALL],mappedBy = "items")
-    open var categories: MutableSet<Category> = HashSet(),
+    @get:Column(name = "picture")
+    open var picture: String? = null,
+
+    @get:Column(name = "score")
+    open var score: Double? = null,
+
+    @Temporal(TemporalType.DATE)
+    @get:Column(name = "date")
+    open var date: Date? = null,
+
+    @get:Column(name = "status")
+    open var status: String? = null,
+
+    @get:Column(name = "custom")
+    open var custom: Boolean? = null,
+
+    @get:ManyToOne
+    @JoinColumn(name="category_id")
+    open var category: Category?=null,
 
     @get:Id
     @get:GeneratedValue

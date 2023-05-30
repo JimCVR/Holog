@@ -14,50 +14,41 @@ class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepos
     ItemsServiceAPI {
 
     override fun getAllItems(): Set<Item> {
-        return itemsRepository.findAll().toSet()
+        return itemsRepository.findAllByOrderByIdAsc().toSet()
     }
 
     override fun getItemById(id: Long): Item {
-        val item: Item? = itemsRepository.findById(id).orElseThrow{ItemNotFoundException("Item Not found")}
-            return item!!
+        val item: Item? = itemsRepository.findById(id).orElseThrow { ItemNotFoundException("Item Not found") }
+        return item!!
     }
 
     override fun getItemByCategory(categoryId: Long): Set<Item> {
         val category =
             categoriesRepository.findById(categoryId).orElseThrow { CategoryNotFoundException("Category not found") }
-        return category.items
+        return category.items!!
     }
 
-    override fun createItem(categoriesId: List<Long>, item: Item): Item {
-        val exceptions = mutableSetOf<Long>()
-        val categories = mutableListOf<Category>()
-
-        categoriesId.forEach {
-            categoriesRepository.findById(it).ifPresentOrElse({ cat ->
-                cat.items.add(itemsRepository.save(item))
-                categories.add(cat)
-            }, {
-                exceptions.add(it)
-            })
-        }
-
-        if (exceptions.isNotEmpty()) {
-            throw CategoryNotFoundException("Category not found for id: $exceptions")
-        } else categories.forEach { categoriesRepository.save(it) }
-
-        return item
+    override fun createItem(categoryId: Long, item: Item): Item {
+        categoriesRepository.findById(categoryId).ifPresentOrElse({
+            item.category = it
+        }, {
+            throw CategoryNotFoundException("Category not found")
+        })
+        return itemsRepository.save(item)
     }
 
-    override fun updateItem(id: Long, itemUpdated: Item): Boolean {
-        val item = itemsRepository.findById(id).orElseThrow { ItemNotFoundException("Item not found") }
+    override fun updateItem(categoryId: Long,id: Long, itemUpdated: Item): Boolean {
+        itemsRepository.findById(id).orElseThrow { ItemNotFoundException("Item not found") }
+        itemUpdated.category = categoriesRepository.findById(categoryId).orElseThrow { CategoryNotFoundException("Category not found") }
         itemUpdated.id = id
         itemsRepository.save(itemUpdated)
         return true
     }
 
     override fun deleteItem(id: Long): Item {
-        val item: Item? = itemsRepository.findById(id).orElseThrow{ ItemNotFoundException("Item not found")}
-            return item!!
+        val item: Item? = itemsRepository.findById(id).orElseThrow { ItemNotFoundException("Item not found") }
+        itemsRepository.delete(item!!)
+        return item!!
     }
 
 }

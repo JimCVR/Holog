@@ -1,14 +1,13 @@
 package com.reactorsolutions.holog.services.api
 
 
-import com.reactorsolutions.holog.models.Category
 import com.reactorsolutions.holog.models.Item
 
 interface ItemsServiceAPI {
     fun getAllItems(): Set<Item>
     fun getItemById(id:Long): Item
     fun getItemByCategory(id:Long): Set<Item>
-    fun createItem(categoriesId:List<Long>,item: Item): Item
-    fun updateItem(id: Long, item: Item):Boolean
+    fun createItem(categoryId:Long, item: Item): Item
+    fun updateItem(categoryId: Long,id: Long, item: Item):Boolean
     fun deleteItem(id:Long): Item
 }

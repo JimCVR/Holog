@@ -21,8 +21,8 @@ class CategoriesController(
 ) {
 
     @GetMapping("/{userId}/categories")
-    fun getCategories(@PathVariable userId: Long): ResponseEntity<List<ResponseCategoryDTO>> {
-        val categories = categoryServiceAPI.getAllCategories()
+    fun getCategories(@PathVariable userId: String): ResponseEntity<List<ResponseCategoryDTO>> {
+        val categories = categoryServiceAPI.getAllCategories().filter { it.userId == userId }
         val categoriesDTO = categories.map {
             toResponseCategory.transform(it)
         }
@@ -30,7 +30,7 @@ class CategoriesController(
     }
 
     @GetMapping("/{userId}/categories/{id}")
-    fun getCategoryById(@PathVariable userId: Long, @PathVariable id: Long): ResponseEntity<ResponseCategoryDTO> {
+    fun getCategoryById(@PathVariable userId: String, @PathVariable id: Long): ResponseEntity<ResponseCategoryDTO> {
         val category = categoryServiceAPI.getCategoryById(id)
         val categoryDTO = toResponseCategory.transform(category)
         return ResponseEntity(categoryDTO, HttpStatus.OK)
@@ -38,14 +38,14 @@ class CategoriesController(
 
     @PostMapping("/{userId}/categories")
     fun insertCategory(
-        @PathVariable userId: Long,
+        @PathVariable userId: String,
         @RequestBody requestCategoryDTO: RequestCategoryDTO
     ): ResponseEntity<String> {
         if (requestCategoryDTO.name.isBlank())
             return ResponseEntity("Category not created", HttpStatus.PRECONDITION_FAILED)
 
         val category = toCategory.transform(requestCategoryDTO)
-        val categoryCreated = categoryServiceAPI.createCategory(category)
+        val categoryCreated = categoryServiceAPI.createCategory(userId, category)
         val location = ServletUriComponentsBuilder
             .fromCurrentRequest()
             .path("/{id}")
@@ -56,7 +56,7 @@ class CategoriesController(
 
     @PutMapping("/{userId}/categories/{id}")
     fun updateCategory(
-        @PathVariable userId: Long,
+        @PathVariable userId: String,
         @PathVariable id: Long,
         @RequestBody requestCategoryDTO: RequestCategoryDTO
     ): ResponseEntity<String> {
@@ -71,7 +71,7 @@ class CategoriesController(
     }
 
     @DeleteMapping("/{userId}/categories/{id}")
-    fun deleteCategory(@PathVariable userId: Long, id: Long): ResponseEntity<ResponseCategoryDTO> {
+    fun deleteCategory(@PathVariable userId: String,@PathVariable id: Long): ResponseEntity<ResponseCategoryDTO> {
         val deletedCategory = categoryServiceAPI.deleteCategory(id)
         val deletedCategoryDTO = toResponseCategory.transform(deletedCategory)
         return ResponseEntity(deletedCategoryDTO, HttpStatus.OK)

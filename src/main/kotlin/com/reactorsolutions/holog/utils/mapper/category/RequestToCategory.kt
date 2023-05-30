@@ -10,7 +10,6 @@ class RequestToCategory : Mapper<RequestCategoryDTO, Category> {
 
     override fun transform(domain: RequestCategoryDTO): Category = Category(
         domain.name,
-        domain.iconId,
-        mutableSetOf()
+        domain.iconId
     )
 }

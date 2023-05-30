@@ -21,14 +21,14 @@ class ItemsController(
 ) {
 
     @GetMapping("/{userId}/items")
-    fun getItems(@PathVariable userId: Long): ResponseEntity<List<ResponseItemDTO>> {
-        val items = itemsServiceAPI.getAllItems()
+    fun getItems(@PathVariable userId: String): ResponseEntity<List<ResponseItemDTO>> {
+        val items = itemsServiceAPI.getAllItems().filter { it.category!!.userId==userId }
         val responseItemsDTO = items.map { toResponseItem.transform(it) }
         return ResponseEntity(responseItemsDTO, HttpStatus.OK)
     }
 
     @GetMapping("/{userId}/items/{id}")
-    fun getItemById(@PathVariable userId: Long, @PathVariable id: Long): ResponseEntity<ResponseItemDTO> {
+    fun getItemById(@PathVariable userId: String, @PathVariable id: Long): ResponseEntity<ResponseItemDTO> {
         val item = itemsServiceAPI.getItemById(id)
         val itemDTO = toResponseItem.transform(item)
         return ResponseEntity(itemDTO, HttpStatus.OK)
@@ -36,7 +36,7 @@ class ItemsController(
 
     @GetMapping("/{userId}/categories/{categoryId}/items")
     fun getItemByCategory(
-        @PathVariable userId: Long,
+        @PathVariable userId: String,
         @PathVariable categoryId: Long
     ): ResponseEntity<Set<ResponseItemDTO>> {
         val items = itemsServiceAPI.getItemByCategory(categoryId)
@@ -46,12 +46,12 @@ class ItemsController(
 
 
     @PostMapping("/{userId}/items")
-    fun insertItem(@PathVariable userId: Long, @RequestBody requestItemDTO: RequestItemDTO): ResponseEntity<String> {
+    fun insertItem(@PathVariable userId: String, @RequestBody requestItemDTO: RequestItemDTO): ResponseEntity<String> {
         if (requestItemDTO.name.isBlank())
             return ResponseEntity("Item not created", HttpStatus.PRECONDITION_FAILED)
 
         val item = toItem.transform(requestItemDTO)
-        val itemCreated = itemsServiceAPI.createItem(requestItemDTO.categoriesId,item)
+        val itemCreated = itemsServiceAPI.createItem(requestItemDTO.categoryId,item)
         val location = ServletUriComponentsBuilder
             .fromCurrentRequest()
             .path("/{id}")
@@ -62,7 +62,7 @@ class ItemsController(
 
     @PutMapping("/{userId}/items/{id}")
     fun updateItem(
-        @PathVariable userId: Long,
+        @PathVariable userId: String,
         @PathVariable id: Long,
         @RequestBody requestItemDTO: RequestItemDTO
     ): ResponseEntity<String> {
@@ -70,14 +70,15 @@ class ItemsController(
             return ResponseEntity("Item not modified", HttpStatus.PRECONDITION_FAILED)
 
         val item = toItem.transform(requestItemDTO)
-        return if (itemsServiceAPI.updateItem(id,item))
+
+        return if (itemsServiceAPI.updateItem(requestItemDTO.categoryId,id,item))
             ResponseEntity("Item updated", HttpStatus.OK)
         else
             ResponseEntity("Item id not found", HttpStatus.NOT_MODIFIED)
     }
 
     @DeleteMapping("/{userId}/items/{id}")
-    fun deleteItem(@PathVariable userId: Long, id: Long): ResponseEntity<ResponseItemDTO> {
+    fun deleteItem(@PathVariable userId: String, @PathVariable id: Long): ResponseEntity<ResponseItemDTO> {
         val deletedItem = itemsServiceAPI.deleteItem(id)
         val deletedItemDTO = toResponseItem.transform(deletedItem)
         return ResponseEntity(deletedItemDTO, HttpStatus.OK)
