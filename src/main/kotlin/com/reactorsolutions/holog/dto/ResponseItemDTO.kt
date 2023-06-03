@@ -6,7 +6,6 @@ data class ResponseItemDTO(
     val id: Long,
     val name: String,
     val description: String? = null,
-    val author: String? = null,
     val picture: String?,
     val score: Double?,
     val date: Date?,

@@ -13,9 +13,6 @@ open class Item(
     @get:Column(name = "description",length = 2000)
     open var description: String? = null,
 
-    @get:Column(name = "author")
-    open var author: String? = null,
-
     @get:Column(name = "picture")
     open var picture: String? = null,
 

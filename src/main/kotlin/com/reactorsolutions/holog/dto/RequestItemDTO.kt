@@ -5,7 +5,6 @@ import java.sql.Date
 data class RequestItemDTO(
     val name: String,
     val description: String?,
-    val author: String?,
     val picture: String?,
     val score: Double?,
     val date: Date?,
