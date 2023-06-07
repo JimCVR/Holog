@@ -51,7 +51,7 @@ class ItemsController(
             return ResponseEntity("Item not created", HttpStatus.PRECONDITION_FAILED)
 
         val item = toItem.transform(requestItemDTO)
-        val itemCreated = itemsServiceAPI.createItem(requestItemDTO.categoryId,item)
+        val itemCreated = itemsServiceAPI.createItem(requestItemDTO.categoryId, item)
         val location = ServletUriComponentsBuilder
             .fromCurrentRequest()
             .path("/{id}")

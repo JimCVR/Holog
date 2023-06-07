@@ -2,8 +2,8 @@ package com.reactorsolutions.holog.controllers
 
 import com.reactorsolutions.holog.dto.RequestItemDTO
 import com.reactorsolutions.holog.dto.ResponseItemDTO
-import com.reactorsolutions.holog.exceptions.category.CategoryNotFoundException
 import com.reactorsolutions.holog.exceptions.item.ItemNotFoundException
+import com.reactorsolutions.holog.models.Category
 import com.reactorsolutions.holog.models.Item
 import com.reactorsolutions.holog.services.api.ItemsServiceAPI
 import com.reactorsolutions.holog.utils.mapper.item.ItemToResponse
@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 class ItemsControllerTest {
 
@@ -30,22 +29,25 @@ class ItemsControllerTest {
         val serviceMock = mockk<ItemsServiceAPI>()
         every { serviceMock.getAllItems() } returns mutableSetOf<Item>(
             Item(
-                "Interestellar", "lorem ipsum", "Christopher Nolan",
-                mutableSetOf(), 1
+                "Interestellar", "lorem ipsum","imageExample.png",
+                4.7, null,"pending",false, category = Category("categoria1",2, mutableSetOf(),"o19249u42",1),123
             ),
-            Item("Avatar", "dolor upsim", "James Cameron", mutableSetOf(), 2)
+            Item(
+                "Ejemplo1", "lorem ipsum","imageExample.png",
+                5.7, null,"pending",true, category = Category("categoria1",2, mutableSetOf(),"o19249u42",1),321
+            )
         )
 
         val itemsController = ItemsController(
             serviceMock,
             this.fromRequestToItem, this.fromItemToResponse
         )
-        val items = itemsController.getItems(1)
+        val items = itemsController.getItems("o19249u42")
         assertEquals(HttpStatus.OK, items.statusCode)
         assertEquals(
             mutableListOf<ResponseItemDTO>(
-                ResponseItemDTO(1, "Interestellar", "lorem ipsum", "Christopher Nolan"),
-                ResponseItemDTO(2, "Avatar", "dolor upsim", "James Cameron")
+                ResponseItemDTO(123, "Interestellar", "lorem ipsum", "imageExample.png",4.7,null,"pending",false,1),
+                ResponseItemDTO(321, "Ejemplo1", "lorem ipsum", "imageExample.png",5.7,null,"pending",true,1)
             ), items.body
         )
     }
@@ -55,19 +57,19 @@ class ItemsControllerTest {
         val serviceMock = mockk<ItemsServiceAPI>()
         every { serviceMock.getAllItems() } returns mutableSetOf(
             Item(
-                "Interestellar", "lorem ipsum", "Christopher Nolan",
-                mutableSetOf(), 1
+                "Interestellar", "lorem ipsum","imageExample.png",
+                4.7, null,"pending",false, category = Category("categoria1",2, mutableSetOf(),"o19249u42",1),123
             )
         )
         val itemsController = ItemsController(
             serviceMock,
             this.fromRequestToItem, this.fromItemToResponse
         )
-        val items = itemsController.getItems(1)
+        val items = itemsController.getItems("o19249u42")
         assertEquals(HttpStatus.OK, items.statusCode)
         assertEquals(
             mutableListOf<ResponseItemDTO>(
-                ResponseItemDTO(1, "Interestellar", "lorem ipsum", "Christopher Nolan"),
+                ResponseItemDTO(123, "Interestellar", "lorem ipsum", "imageExample.png",4.7,null,"pending",false,1)
             ),
             items.body
         )
@@ -82,7 +84,7 @@ class ItemsControllerTest {
             serviceMock,
             this.fromRequestToItem, this.fromItemToResponse
         )
-        val items = itemsController.getItems(1)
+        val items = itemsController.getItems("123")
         assertEquals(HttpStatus.OK, items.statusCode)
         assertEquals(mutableListOf<ResponseItemDTO>(), items.body)
 
@@ -92,17 +94,17 @@ class ItemsControllerTest {
     @Test
     fun getItemByIdReturn200WhenThereAreOneElement() {
         val serviceMock = mockk<ItemsServiceAPI>()
-        every { serviceMock.getItemById(1) } returns Item(
-            "Interestellar", "lorem ipsum", "Christopher Nolan",
-            mutableSetOf(), 1
+        every { serviceMock.getItemById(123) } returns Item(
+            "Interestellar", "lorem ipsum","imageExample.png",
+            4.7, null,"pending",false, category = Category("categoria1",2, mutableSetOf(),"o19249u42",1),123
         )
         val itemsController = ItemsController(
             serviceMock,
             this.fromRequestToItem, this.fromItemToResponse
         )
-        val items = itemsController.getItemById(1, 1)
+        val items = itemsController.getItemById("o19249u42", 123)
         assertEquals(HttpStatus.OK, items.statusCode)
-        assertEquals(ResponseItemDTO(1, "Interestellar", "lorem ipsum", "Christopher Nolan"), items.body)
+        assertEquals(ResponseItemDTO(123, "Interestellar", "lorem ipsum", "imageExample.png",4.7,null,"pending",false,1), items.body)
     }
 
     @Test
@@ -113,7 +115,7 @@ class ItemsControllerTest {
             serviceMock,
             this.fromRequestToItem, this.fromItemToResponse
         )
-        assertThrows<ItemNotFoundException> { itemsController.getItemById(1, 1) }
+        assertThrows<ItemNotFoundException> { itemsController.getItemById("1345", 1) }
     }
 
     //CREATE ITEM
@@ -123,33 +125,33 @@ class ItemsControllerTest {
         val serviceMock = mockk<ItemsServiceAPI>()
         every {
             serviceMock.createItem(
-                mutableListOf(),
+                123,
                 Item(
-
-                    "Interestellar",
-                    "lorem ipsum",
-                    "Christopher Nolan"
+                    "Interestellar", "lorem ipsum","imageExample.png",
+                    4.7, null,"pending",false, null, null
                 )
             )
-        } returns Item("Interestellar", "lorem ipsum", "Christopher Nolan", mutableSetOf(), 1)
+
+        } returns Item(
+            "Interestellar", "lorem ipsum","imageExample.png",
+            4.7, null,"pending",false, category = Category("cat",1, mutableSetOf(),"o19249u42",123), 1
+        )
         val mockServletRequest = MockHttpServletRequest()
         RequestContextHolder.setRequestAttributes(ServletRequestAttributes(mockServletRequest))
-        val location = ServletUriComponentsBuilder
-            .fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(1)
-            .toUri()
-
         val itemsController = ItemsController(
             serviceMock,
             this.fromRequestToItem, this.fromItemToResponse
         )
         val items = itemsController.insertItem(
-            1, RequestItemDTO(
+            "o19249u42", RequestItemDTO(
                 "Interestellar",
                 "lorem ipsum",
-                "Christopher Nolan",
-                mutableListOf()
+                "imageExample.png",
+                4.7,
+                null,
+                "pending",
+                false,
+                123
             )
         )
         assertEquals(HttpStatus.CREATED, items.statusCode)
@@ -162,11 +164,10 @@ class ItemsControllerTest {
         val serviceMock = mockk<ItemsServiceAPI>()
         every {
             serviceMock.createItem(
-                mutableListOf(),
+                123,
                 Item(
-                    "Interestellar",
-                    "lorem ipsum",
-                    "Christopher Nolan"
+                    "Interestellar", "lorem ipsum","imageExample.png",
+                    4.7, null,"pending",false, null,null
                 )
             )
         } throws ItemNotFoundException("Item not found")
@@ -176,12 +177,16 @@ class ItemsControllerTest {
         )
         assertThrows<ItemNotFoundException> {
             itemsController.insertItem(
-                1,
+                "1",
                 RequestItemDTO(
                     "Interestellar",
                     "lorem ipsum",
-                    "Christopher Nolan",
-                    mutableListOf()
+                    "imageExample.png",
+                    4.7,
+                    null,
+                    "pending",
+                    false,
+                    123
                 )
             )
         }
@@ -192,11 +197,10 @@ class ItemsControllerTest {
         val serviceMock = mockk<ItemsServiceAPI>()
         every {
             serviceMock.createItem(
-                mutableListOf(),
+                123,
                 Item(
-                    "",
-                    "lorem ipsum",
-                    "Christopher Nolan"
+                    "", "lorem ipsum","imageExample.png",
+                    4.7, null,"pending",false, category = Category("categoria1",2, mutableSetOf(),"o19249u42",123),null
                 )
             )
         } returns Item(
@@ -209,11 +213,15 @@ class ItemsControllerTest {
             this.fromRequestToItem, this.fromItemToResponse
         )
         val item = itemsController.insertItem(
-            1, RequestItemDTO(
+            "1", RequestItemDTO(
                 "",
                 "lorem ipsum",
-                "Christopher Nolan",
-                mutableListOf()
+                "imageExample.png",
+                4.7,
+                null,
+                "pending",
+                false,
+                123
             )
         )
         assertEquals(HttpStatus.PRECONDITION_FAILED, item.statusCode)
@@ -228,11 +236,10 @@ class ItemsControllerTest {
         every {
             serviceMock.updateItem(
                 1,
+                1,
                 Item(
-                    "Interestellar",
-                    "lorem ipsum",
-                    "Christopher Nolan",
-                    hashSetOf()
+                    "nuevoNombre", "lorem ipsum","imageExample.png",
+                    4.7, null,"pending",false, null, null
                 )
             )
         } returns true
@@ -241,11 +248,17 @@ class ItemsControllerTest {
             this.fromRequestToItem, this.fromItemToResponse
         )
         val item = itemsController.updateItem(
-            1, 1, RequestItemDTO(
-                "Interestellar",
+            "1",
+            1,
+            RequestItemDTO(
+                "nuevoNombre",
                 "lorem ipsum",
-                "Christopher Nolan",
-                mutableListOf()
+                "imageExample.png",
+                4.7,
+                null,
+                "pending",
+                false,
+                1
             )
         )
         assertEquals(HttpStatus.OK, item.statusCode)
@@ -253,15 +266,15 @@ class ItemsControllerTest {
     }
 
     @Test
-    fun updateCategoryByIdReturn407WhenNameIsBlank() {
+    fun updateItemByIdReturn407WhenNameIsBlank() {
         val serviceMock = mockk<ItemsServiceAPI>()
         every {
             serviceMock.updateItem(
                 1,
+                1,
                 Item(
-                    "",
-                    "lorem ipsum",
-                    "Christopher Nolan", mutableSetOf(), 1
+                    "", "lorem ipsum","imageExample.png",
+                    4.7, null,"pending",false, category = Category("categoria1",2, mutableSetOf(),"o19249u42",123),1
                 )
             )
         } returns true
@@ -270,11 +283,17 @@ class ItemsControllerTest {
             this.fromRequestToItem, this.fromItemToResponse
         )
         val item = itemsController.updateItem(
-            1, 1, RequestItemDTO(
+            "1",
+            1,
+            RequestItemDTO(
                 "",
                 "lorem ipsum",
-                "Christopher Nolan",
-                mutableListOf()
+                "imageExample.png",
+                4.7,
+                null,
+                "pending",
+                false,
+                123
             )
         )
         assertEquals(HttpStatus.PRECONDITION_FAILED, item.statusCode)
@@ -282,31 +301,35 @@ class ItemsControllerTest {
     }
 
     @Test
-    fun updateCategoryByIdReturn404WhenIdNotFound() {
+    fun updateItemByIdReturn404WhenIdNotFound() {
         val serviceMock = mockk<ItemsServiceAPI>()
         every {
             serviceMock.updateItem(
                 1,
+                1,
                 Item(
-                    "Interestellar",
-                    "lorem ipsum",
-                    "Christopher Nolan"
+                    "Interestellar", "lorem ipsum","imageExample.png",
+                    4.7, null,"pending",false,null,null
                 )
             )
-        } throws CategoryNotFoundException("Item not found")
+        } throws ItemNotFoundException("Item not found")
         val itemsController = ItemsController(
             serviceMock,
             this.fromRequestToItem, this.fromItemToResponse
         )
-        assertThrows<CategoryNotFoundException> {
+        assertThrows<ItemNotFoundException> {
             itemsController.updateItem(
-                1,
+                "1",
                 1,
                 RequestItemDTO(
                     "Interestellar",
                     "lorem ipsum",
-                    "Christopher Nolan",
-                    mutableListOf()
+                    "imageExample.png",
+                    4.7,
+                    null,
+                    "pending",
+                    false,
+                    1
                 )
             )
         }
@@ -317,21 +340,17 @@ class ItemsControllerTest {
     fun deleteItemByIdReturn200WhenElementDeleted() {
         val serviceMock = mockk<ItemsServiceAPI>()
         every { serviceMock.deleteItem(1) } returns Item(
-            "Interestellar",
-            "lorem ipsum",
-            "Christopher Nolan", mutableSetOf(), 1
+            "Interestellar", "lorem ipsum","imageExample.png",
+            4.7, null,"pending",false, category = Category("categoria1",2, mutableSetOf(),"o19249u42",1),1
         )
         val itemsController = ItemsController(
             serviceMock,
             this.fromRequestToItem, this.fromItemToResponse
         )
-        val items = itemsController.deleteItem(1, 1)
+        val items = itemsController.deleteItem("o19249u42", 1)
         assertEquals(HttpStatus.OK, items.statusCode)
         assertEquals(
-            ResponseItemDTO(
-                1, "Interestellar", "lorem ipsum",
-                "Christopher Nolan"
-            ), items.body
+            ResponseItemDTO(1, "Interestellar", "lorem ipsum", "imageExample.png",4.7,null,"pending",false,1), items.body
         )
     }
 
@@ -343,6 +362,6 @@ class ItemsControllerTest {
             serviceMock,
             this.fromRequestToItem, this.fromItemToResponse
         )
-        assertThrows<ItemNotFoundException> { itemsController.deleteItem(1, 1) }
+        assertThrows<ItemNotFoundException> { itemsController.deleteItem("1", 1) }
     }
 }
