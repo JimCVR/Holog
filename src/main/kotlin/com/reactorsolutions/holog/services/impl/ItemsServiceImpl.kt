@@ -18,8 +18,7 @@ class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepos
     }
 
     override fun getItemById(id: Long): Item {
-        val item: Item? = itemsRepository.findById(id).orElseThrow { ItemNotFoundException("Item Not found") }
-        return item!!
+         return itemsRepository.findById(id).orElseThrow { ItemNotFoundException("Item Not found") }
     }
 
     override fun getItemByCategory(categoryId: Long): Set<Item> {
@@ -41,8 +40,8 @@ class ItemsServiceImpl(var itemsRepository: ItemsRepository, var categoriesRepos
         itemsRepository.findById(id).orElseThrow { ItemNotFoundException("Item not found") }
         itemUpdated.category = categoriesRepository.findById(categoryId).orElseThrow { CategoryNotFoundException("Category not found") }
         itemUpdated.id = id
-        itemsRepository.save(itemUpdated)
-        return true
+        var savedItem = itemsRepository.save(itemUpdated)
+        return savedItem == itemUpdated
     }
 
     override fun deleteItem(id: Long): Item {
