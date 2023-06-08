@@ -1,6 +1,5 @@
 package com.reactorsolutions.holog.services.api
 
-
 import com.reactorsolutions.holog.models.Item
 
 interface ItemsServiceAPI {

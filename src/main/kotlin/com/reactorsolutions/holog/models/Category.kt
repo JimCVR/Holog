@@ -23,7 +23,6 @@ open class Category (
     @get:Column(name = "id")
     open var id: Long? = null,
 ){
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Category) return false

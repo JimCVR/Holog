@@ -70,7 +70,6 @@ class ItemsController(
             return ResponseEntity("Item not modified", HttpStatus.PRECONDITION_FAILED)
 
         val item = toItem.transform(requestItemDTO)
-
         return if (itemsServiceAPI.updateItem(requestItemDTO.categoryId,id,item))
             ResponseEntity("Item updated", HttpStatus.OK)
         else
