@@ -1,9 +1,15 @@
 package com.reactorsolutions.holog.dto
 
-data class ResponseItemDTO (
+import java.sql.Date
+
+data class ResponseItemDTO(
     val id: Long,
     val name: String,
-    val description: String?=null,
-    val author: String?=null,
-    //val categories_id: MutableList<Long>
+    val description: String? = null,
+    val picture: String?,
+    val score: Double?,
+    val date: Date?,
+    val status: String?,
+    val custom:Boolean?,
+    val categoryId: Long
 )

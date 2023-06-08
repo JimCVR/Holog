@@ -12,14 +12,16 @@ class CategoriesServiceImpl(var categoriesRepository: CategoriesRepository, var 
     CategoriesServiceAPI {
 
     override fun getAllCategories(): Set<Category> {
-        return categoriesRepository.findAll().toSet()
+        return categoriesRepository.findAllByOrderByIdAsc().toSet()
     }
+
 
     override fun getCategoryById(id: Long): Category {
         return categoriesRepository.findById(id).orElseThrow { CategoryNotFoundException("Category not found") }
     }
 
-    override fun createCategory(category: Category): Category {
+    override fun createCategory(userId:String,category: Category): Category {
+        category.userId=userId
         return categoriesRepository.save(category)
     }
 
@@ -27,6 +29,7 @@ class CategoriesServiceImpl(var categoriesRepository: CategoriesRepository, var 
         val category = categoriesRepository.findById(id)
             .orElseThrow { CategoryNotFoundException("Category not found") }
         categoryUpdated.id = id
+        categoryUpdated.userId = category.userId
         categoriesRepository.save(categoryUpdated)
         return true
     }

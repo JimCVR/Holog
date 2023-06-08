@@ -11,6 +11,11 @@ class ItemToResponse : Mapper<Item, ResponseItemDTO> {
         entity.id!!,
         entity.name,
         entity.description,
-        entity.author
+        entity.picture,
+        entity.score,
+        entity.date,
+        entity.status,
+        entity.custom,
+        entity.category!!.id!!
     )
 }

@@ -10,6 +10,7 @@ class CategoryToResponse : Mapper<Category, ResponseCategoryDTO> {
     override fun transform(entity: Category): ResponseCategoryDTO = ResponseCategoryDTO(
         entity.id!!,
         entity.name,
-        entity.iconId
+        entity.userId,
+        entity.iconId,
     )
 }

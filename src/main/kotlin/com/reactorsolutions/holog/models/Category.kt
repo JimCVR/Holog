@@ -12,25 +12,17 @@ open class Category (
     @get:Column(name = "icon_id")
     open var iconId: Int? = null,
 
-    @get:ManyToMany(cascade = [CascadeType.ALL])
-    @get:JoinTable(
-        name = "category_item",
-        joinColumns = [JoinColumn(name = "category_id")],
-        inverseJoinColumns = [JoinColumn(name = "item_id")]
-    )
+    @get:OneToMany(mappedBy = "category", cascade = [CascadeType.ALL])
     open var items: MutableSet<Item> = HashSet(),
+
+    @get:Column(name = "user_id")
+    open var userId: String? = null,
 
     @get:Id
     @get:GeneratedValue
     @get:Column(name = "id")
     open var id: Long? = null,
 ){
-
-    fun addItem(item:Item){
-        items.add(item)
-        item.categories.add(this)
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Category) return false

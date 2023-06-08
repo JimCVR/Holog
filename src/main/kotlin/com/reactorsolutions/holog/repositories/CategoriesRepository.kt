@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CategoriesRepository : CrudRepository<Category, Long> {
+    fun findAllByOrderByIdAsc(): Set<Category>
 }
