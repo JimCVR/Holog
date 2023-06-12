@@ -60,6 +60,14 @@ class ItemsController(
         return ResponseEntity.created(location).body("Item created")
     }
 
+    @PostMapping("/{userId}/items/recommend")
+    fun recommendItem():String? {
+        val items = itemsServiceAPI.recommendation()
+        var string = ""
+        items.forEach{string += it.description!! }
+        return string
+    }
+
     @PutMapping("/{userId}/items/{id}")
     fun updateItem(
         @PathVariable userId: String,

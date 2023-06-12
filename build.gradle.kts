@@ -17,7 +17,9 @@ repositories {
 }
 
 dependencies {
-	//implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
+	implementation ("com.theokanning.openai-gpt3-java:client:0.12.0")
+	implementation ("com.theokanning.openai-gpt3-java:api:0.12.0")
+	implementation ("com.theokanning.openai-gpt3-java:service:0.12.0")
 	testImplementation("junit:junit:4.13.1")
 	testImplementation ("io.mockk:mockk:1.9.3")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
